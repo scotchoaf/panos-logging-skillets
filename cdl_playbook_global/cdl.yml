@@ -13,7 +13,7 @@
       include_vars: 'vars.yml'
       no_log: 'yes'
 
-    - name: Ensure deps are avabilable
+    - name: Ensure deps are available
       # Ensure we have all the right requirements installed in this environment
       pip:
         name:
@@ -32,7 +32,7 @@
       register: system_info
       until: system_info is not failed
       retries: 10
-      delay: 5
+      delay: 10
 
     # json to dict to use in multiple places
     - set_fact: system_info_json="{{ system_info.stdout | from_json }}"
@@ -56,11 +56,17 @@
       fail: msg="stop - VM-series firewall missing serial number and unlicensed"
       when: system_info_json.response.result.system.serial == 'Unknown'
 
-    # fetch CDL license
-    # TODO: Add in the license check to pull in latest subscriptions
+    # fetch license info
+    - name: fetch license info
+      panos_op:
+        provider: '{{ provider }}'
+        cmd: 'request license fetch'
+      register: license_info
+      until: license_info is not failed
+      retries: 10
+      delay: 10
 
-
-    # get license info
+    # show license info
     - name: show license info
       panos_op:
         provider: '{{ provider }}'
@@ -68,7 +74,7 @@
       register: license_info
       until: license_info is not failed
       retries: 10
-      delay: 5
+      delay: 10
 
     # json to dict to use in multiple places
     - set_fact: license_info_json="{{ license_info.stdout | from_json }}"
@@ -97,8 +103,8 @@
         cmd: 'request logging-service-forwarding certificate delete'
       register: cdl_delete_response
       until: cdl_delete_response is not failed
-      retries: 5
-      delay: 5
+      retries: 10
+      delay: 10
 
     # debug output to show cert delete message
     - name: delete cdl cert response
@@ -112,7 +118,7 @@
       register: cdl_fetch_response
       until: cdl_fetch_response is not failed
       retries: 10
-      delay: 5
+      delay: 10
 
     # debug output to show full response with job id
     - name: fetch cdl cert response
@@ -134,7 +140,7 @@
         cdl_job_status is not failed
         and (cdl_job_status.stdout | from_json).response.result.job.status == 'FIN'
       retries: 10
-      delay: 5
+      delay: 10
 
     # output of the full json job status
     - name: cdl job status result
@@ -152,7 +158,7 @@
       register: cdl_cert_info
       until: cdl_cert_info is not failed
       retries: 10
-      delay: 5
+      delay: 10
 
     # full response output as text response for testing and debug
     - name: cdl cert info response
@@ -179,7 +185,7 @@
       register: cdl_customer_response
       until: cdl_customer_response is not failed
       retries: 10
-      delay: 5
+      delay: 10
 
     # full response output as text response for testing and debug
     - name: cdl customer fetch response
@@ -197,7 +203,7 @@
       register: cdl_customerinfo_response
       until: cdl_customerinfo_response is not failed
       retries: 10
-      delay: 5
+      delay: 10
 
     # full response output for testing and debug
     - name: cdl customerinfo response
@@ -215,10 +221,14 @@
       fail: msg="stop - no region found"
       when: cdl_customer_region | length == 0
 
+    # TODO: work on reading and replacing the cdl_region based on fw content
+    # currently using skillet_vars and checking if hostvars['localhost'] is an option
+    - name: debug skillet_vars
+      debug: msg="skillet vars are {{ skillet_vars }}"
+    - name: debug hostvars
+      debug: msg="host vars are {{ hostvars['localhost'] }}"
 
-    # TODO: PUT CDL WITH EAL CONFIGURATION HERE
-    # REQUIRED TO GET TO ACTIVE AND CONNECTED STATE
-
+    # read in the skillet content from a repo
     - name: download the CDL global config skillet
       git:
         repo: '{{ skillet_repo }}'
@@ -227,17 +237,24 @@
       tags:
         - always
 
+    # play the named skillet to configure fw elements
     - name: play cdl global config skillet
       panos_skillet:
         skillet_path: '{{ playbook_dir }}/files'
         skillet: '{{ skillet }}'
         provider: '{{ provider }}'
-        vars: '{{ hostvars["localhost"] }}'
+        vars: '{{ skillet_vars }}'
       register: skillet_output
 
+    # output of config push
+    # TODO: add validate of a successful config
     - name: dump test output
       debug:
         msg: '{{ skillet_output }}'
+
+    - name: commit config
+      panos_commit:
+        provider: '{{ provider }}'
 
     # logging status show if firewall active and connected to CDL
     - name: show logging-status
@@ -247,7 +264,7 @@
       register: logging_status
       until: logging_status is not failed
       retries: 10
-      delay: 5
+      delay: 10
 
     # full response output as text response for testing and debug
     - name: logging status
@@ -274,8 +291,6 @@
       fail: msg="stop - logging status is not showing CDL connection is connected"
       when: check_cdl_active != 'is active'
 
-    # force quit to test part of playbook
-    - set_fact: stop_playbook='stop'
-    - name: stop playbook
-      fail: msg="planned stop during testing"
-      when: stop_playbook == 'stop'
+    # cdl is active and connected
+    - name: logging status
+      debug: msg='the device is connected to Cortex Data Lake and ready for forward logs'

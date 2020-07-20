@@ -52,3 +52,8 @@
       debug:
         msg: '{{ skillet_output }}'
 
+    # force quit to test part of playbook
+    - set_fact: stop_playbook='stop'
+    - name: stop playbook
+      fail: msg="planned stop during testing"
+      when: stop_playbook == 'stop'
