@@ -1,0 +1,54 @@
+- name: cdl_content
+  hosts: localhost
+  connection: local
+  gather_facts: False
+
+  collections:
+    - paloaltonetworks.panos
+    - nembery.skillet
+
+  tasks:
+    # currently using clear text vars for testing
+    - name: grab auth creds
+      include_vars: 'vars.yml'
+      no_log: 'yes'
+
+    - name: debug hostvars
+      debug: msg="host vars are {{ hostvars['localhost'] }}"
+
+
+    - name: debug skillet_vars
+      debug: msg="skillet vars are {{ skillet_vars }}"
+
+    # testing update of skillet_vars dict with region in main playbook
+    - set_fact: cdl_region='americas'
+
+    # - set_fact:
+    #    skillet_vars: "{{ skillet_vars | combine({skillet_vars['cdl_region']:'{{ cdl_region }}'}) }}"
+
+    - name: debug skillet_vars
+      debug: msg="skillet vars are {{ skillet_vars }}"
+
+    - name: download the CDL global config skillet
+      git:
+        repo: '{{ skillet_repo }}'
+        dest: '{{ playbook_dir }}/files'
+        version: '{{ branch }}'
+      tags:
+        - always
+
+    - name: debug hostvars
+      debug: msg="host vars are {{ hostvars['localhost'] }}"
+
+    - name: play cdl global config skillet
+      panos_skillet:
+        skillet_path: '{{ playbook_dir }}/files'
+        skillet: '{{ skillet }}'
+        provider: '{{ provider }}'
+        vars: '{{ skillet_vars }}'
+      register: skillet_output
+
+    - name: dump test output
+      debug:
+        msg: '{{ skillet_output }}'
+

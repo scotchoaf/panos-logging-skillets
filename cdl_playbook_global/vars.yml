@@ -1,0 +1,17 @@
+# clear text test var
+provider:
+    ip_address: '192.168.55.137'
+    username: 'admin'
+    password: 'Paloalto1'
+
+# must be updated every 24 hours at apps.paloaltonetworks.com and Onboarding Firewall in Cortext Data Lake app
+cdl_psk: 'UGhQrZfDKyFgsIGCATUD+d9dgToAXA/eegIX40Gat9E='
+
+# skillet repo content for the playbook
+skillet_repo: 'https://github.com/scotchoaf/panos_tools.git'
+branch: 'cdl_configs'
+skillet: 'cdl_global_config_panos'
+
+# vars passed to the skillet
+skillet_vars:
+    cdl_region: 'americas'
