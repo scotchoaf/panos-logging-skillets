@@ -7,3 +7,12 @@ The CDL global configuration will configure:
 
     * global CDL with EAL enabled including the region
     * configuration and system logs using CDL forwarding
+    
+    
+ use to run the test playbook
+
+ansible-playbook -i ./inventory.ini test_playbook.yml
+
+use to run the cdl playbook
+
+ansible-playbook -i ./inventory.ini cdl.yml

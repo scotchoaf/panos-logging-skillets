@@ -1,9 +1,0 @@
-use to run the test playbook
-
-ansible-playbook -i ./inventory.ini test_playbook.yml
-
-use to run the cdl playbook
-
-ansible-playbook -i ./inventory.ini cdl.yml
-
-

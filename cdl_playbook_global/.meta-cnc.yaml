@@ -1,0 +1,42 @@
+# skillet preamble information used by panhandler
+# ---------------------------------------------------------------------
+# unique snippet name
+name: cdl_global_config_playbook_script
+label: Cortex Data Lake global configuration with Ansible playbook
+description: Run a Cortex Data Lake (CDL) configuration Ansible playbook within a python virtual environment
+type: python3
+labels:
+  collection:
+    - CDL
+
+# ---------------------------------------------------------------------
+# end of preamble section
+
+# variables section
+# ---------------------------------------------------------------------
+variables:
+  - name: hostname
+    description: Firewall hostname
+    default: myFirewall
+    type_hint: text
+  - name: choices
+    description: sample dropdown list
+    default: choices
+    type_hint: dropdown
+    dd_list:
+      - key: option1
+        value: option1
+      - key: option2
+        value: option2
+# ---------------------------------------------------------------------
+# end of variables section
+
+# snippets section
+# ---------------------------------------------------------------------
+snippets:
+
+  - name: run_ansible_playbook
+    file: run_ansible_playbook.py
+    input_type: cli
+# ---------------------------------------------------------------------
+# end of snippets section

@@ -45,7 +45,7 @@
     # this IS NOT working when using >= so have <= during testing until resolved - appears as reverse logic
     - name: firewall version with CDL onboarding support
       fail: msg="stop - NGFW sw version must be 9.0.6 or later"
-      when: system_info_json.response.result.system['sw-version'] is version ('9.0.6', '<=')
+      when: system_info_json.response.result.system['sw-version'] is version('9.0.6', '<=')
 
     # check serial number; may be used in vm-series testing as licensing check
     - name: serial number
@@ -221,12 +221,13 @@
       fail: msg="stop - no region found"
       when: cdl_customer_region | length == 0
 
-    # TODO: work on reading and replacing the cdl_region based on fw content
-    # currently using skillet_vars and checking if hostvars['localhost'] is an option
+    # update skillet_var dict with licensed customer region
+    - set_fact:
+        skillet_vars: "{{ skillet_vars | combine({'cdl_region': cdl_customer_region }) }}"
+
+    # debug output for the current skillet_vars values
     - name: debug skillet_vars
       debug: msg="skillet vars are {{ skillet_vars }}"
-    - name: debug hostvars
-      debug: msg="host vars are {{ hostvars['localhost'] }}"
 
     # read in the skillet content from a repo
     - name: download the CDL global config skillet
@@ -247,7 +248,6 @@
       register: skillet_output
 
     # output of config push
-    # TODO: add validate of a successful config
     - name: dump test output
       debug:
         msg: '{{ skillet_output }}'
@@ -262,7 +262,8 @@
         provider: '{{ provider }}'
         cmd: 'show logging-status'
       register: logging_status
-      until: logging_status is not failed
+      #until: logging_status is not failed
+      until: logging_status.stdout | regex_search('is active and connected') == 'is active and connected'
       retries: 10
       delay: 10
 
@@ -270,27 +271,27 @@
     - name: logging status
       debug: msg='{{ logging_status.stdout }}'
 
-    - set_fact:
-        check_cdl_active="{{ logging_status.stdout | regex_search(regexp) }}"
-      vars:
-        regexp: 'is active'
+    #- set_fact:
+    #    check_cdl_active="{{ logging_status.stdout | regex_search(regexp) }}"
+    #  vars:
+     #   regexp: 'is active'
 
     # check CDL logging status and end if not active
-    - name: check cdl is active
-      fail: msg="stop - logging status is not showing CDL connection is active"
-      when: check_cdl_active != 'is active'
+    #- name: check cdl is active
+    #  fail: msg="stop - logging status is not showing CDL connection is active"
+    #  when: check_cdl_active != 'is active'
 
     # check CDL logging is active and connected
-    - set_fact:
-        cdl_connected="{{ logging_status.stdout | regex_search(regexp) }}"
-      vars:
-        regexp: 'is active and connected'
+    #- set_fact:
+    #    cdl_connected="{{ logging_status.stdout | regex_search(regexp) }}"
+    #  vars:
+    #    regexp: 'is active and connected'
 
     # check CDL logging status and end if not active and connected
-    - name: check cdl is connected
-      fail: msg="stop - logging status is not showing CDL connection is connected"
-      when: check_cdl_active != 'is active'
+    #- name: check cdl is connected
+    #  fail: msg="stop - logging status is not showing CDL connection is connected"
+    #  when: check_cdl_active != 'is active and connected'
 
     # cdl is active and connected
     - name: logging status
-      debug: msg='the device is connected to Cortex Data Lake and ready for forward logs'
+      debug: msg='the device is connected to Cortex Data Lake and ready to forward logs'

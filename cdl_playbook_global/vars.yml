@@ -5,7 +5,7 @@ provider:
     password: 'Paloalto1'
 
 # must be updated every 24 hours at apps.paloaltonetworks.com and Onboarding Firewall in Cortext Data Lake app
-cdl_psk: 'UGhQrZfDKyFgsIGCATUD+d9dgToAXA/eegIX40Gat9E='
+cdl_psk: 'get me at apps.paloaltonetworks.com'
 
 # skillet repo content for the playbook
 skillet_repo: 'https://github.com/scotchoaf/panos_tools.git'

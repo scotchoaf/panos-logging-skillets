@@ -13,44 +13,22 @@
       include_vars: 'vars.yml'
       no_log: 'yes'
 
-    - name: debug hostvars
-      debug: msg="host vars are {{ hostvars['localhost'] }}"
-
-
-    - name: debug skillet_vars
-      debug: msg="skillet vars are {{ skillet_vars }}"
-
-    # testing update of skillet_vars dict with region in main playbook
-    - set_fact: cdl_region='americas'
-
-    # - set_fact:
-    #    skillet_vars: "{{ skillet_vars | combine({skillet_vars['cdl_region']:'{{ cdl_region }}'}) }}"
-
-    - name: debug skillet_vars
-      debug: msg="skillet vars are {{ skillet_vars }}"
-
-    - name: download the CDL global config skillet
-      git:
-        repo: '{{ skillet_repo }}'
-        dest: '{{ playbook_dir }}/files'
-        version: '{{ branch }}'
-      tags:
-        - always
-
-    - name: debug hostvars
-      debug: msg="host vars are {{ hostvars['localhost'] }}"
-
-    - name: play cdl global config skillet
-      panos_skillet:
-        skillet_path: '{{ playbook_dir }}/files'
-        skillet: '{{ skillet }}'
+    # check access to the system and pull a few values
+    - name: show system info
+      panos_op:
         provider: '{{ provider }}'
-        vars: '{{ skillet_vars }}'
-      register: skillet_output
+        cmd: 'show system info'
+      register: system_info
+      until: system_info is not failed
+      retries: 10
+      delay: 10
 
-    - name: dump test output
-      debug:
-        msg: '{{ skillet_output }}'
+    # json to dict to use in multiple places
+    - set_fact: system_info_json="{{ system_info.stdout | from_json }}"
+
+    # output software version for min version check
+    - name: software version
+      debug: msg='software version is {{ system_info_json.response.result.system['sw-version'] }}'
 
     # force quit to test part of playbook
     - set_fact: stop_playbook='stop'
