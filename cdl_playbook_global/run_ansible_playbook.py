@@ -26,7 +26,7 @@ import click
 @click.option("-ip", "--TARGET_IP", help="device IP address", type=str, default='')
 @click.option("-u", "--TARGET_USERNAME", help="API username", type=str, default='admin')
 @click.option("-p", "--TARGET_PASSWORD", help="API password", type=str, default='Paloalto1')
-def cli(cdl_preshared_key, device_ip, username, password):
+def cli(cdl_preshared_key, target_ip, target_username, target_password):
     """
     run ansible playbook for global Cortex Data Lake configuration
     :param cdl_preshared_key: firewall onboarding PreShared_Key for Cortex Data Lake
