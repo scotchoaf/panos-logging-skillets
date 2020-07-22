@@ -271,27 +271,6 @@
     - name: logging status
       debug: msg='{{ logging_status.stdout }}'
 
-    #- set_fact:
-    #    check_cdl_active="{{ logging_status.stdout | regex_search(regexp) }}"
-    #  vars:
-     #   regexp: 'is active'
-
-    # check CDL logging status and end if not active
-    #- name: check cdl is active
-    #  fail: msg="stop - logging status is not showing CDL connection is active"
-    #  when: check_cdl_active != 'is active'
-
-    # check CDL logging is active and connected
-    #- set_fact:
-    #    cdl_connected="{{ logging_status.stdout | regex_search(regexp) }}"
-    #  vars:
-    #    regexp: 'is active and connected'
-
-    # check CDL logging status and end if not active and connected
-    #- name: check cdl is connected
-    #  fail: msg="stop - logging status is not showing CDL connection is connected"
-    #  when: check_cdl_active != 'is active and connected'
-
     # cdl is active and connected
     - name: logging status
       debug: msg='the device is connected to Cortex Data Lake and ready to forward logs'
