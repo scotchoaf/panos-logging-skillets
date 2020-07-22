@@ -39,10 +39,12 @@ def cli(cdl_preshared_key, device_ip, username, password):
     # create a simple provider dict to convert to json and pass as ansible extra-var
     provider_dict = {}
     provider_dict['provider'] = {}
-    provider_dict['provider']['ip_address'] = TARGET_IP
-    provider_dict['provider']['username'] = TARGET_USERNAME
-    provider_dict['provider']['password'] = TARGET_PASSWORD
+    provider_dict['provider']['ip_address'] = target_ip
+    provider_dict['provider']['username'] = target_username
+    provider_dict['provider']['password'] = target_password
     xvar_provider = json.dumps(provider_dict)
+
+    print(f'configuring device {target_ip} as user {target_username}')
 
     # ansible command line entry with extra vars
     playbook_cmd = f'ansible-playbook -i inventory.ini cdl.yml' \
