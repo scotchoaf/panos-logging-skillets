@@ -10,7 +10,7 @@ variables:
 
   - name: log_profile_name
     description: name of logging profile to update
-    default: CLI_profile
+    default: default
     type_hint: text
   - name: log_types
     description: firewall log types
