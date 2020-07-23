@@ -47,7 +47,7 @@ def cli(cdl_preshared_key, target_ip, target_username, target_password):
     print(f'configuring device {target_ip} as user {target_username}')
 
     # ansible command line entry with extra vars
-    playbook_cmd = f'ansible-playbook -i ./inventory.ini ./cdl.yml' \
+    playbook_cmd = f'ansible-playbook -i inventory.ini cdl.yml' \
                    f' -e cdl_psk={cdl_preshared_key}' \
                    f' -e "{xvar_provider}"'
 
