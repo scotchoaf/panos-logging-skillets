@@ -42,7 +42,7 @@ def cli(cdl_preshared_key, target_ip, target_username, target_password):
     check_env.wait()
     print(check_env)
     python_venv = os.environ.copy()
-    python_venv["PATH"] = "~/venv/bin:" + python_venv["PATH"]
+    python_venv["PATH"] = "/home/cnc_user/.pan_cnc/panhandler/repositories/logging skillets/cdl_playbook_global/.venv/bin:" + python_venv["PATH"]
     print('new path', python_venv["PATH"])
 
 
