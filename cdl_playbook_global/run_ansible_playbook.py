@@ -16,7 +16,7 @@
 # Authors: Scott Shoaf, Nathan Embery
 
 import json
-import subprocess
+from subprocess import PIPE, STDOUT, Popen, CalledProcessError, check_output
 
 import click
 
@@ -36,6 +36,32 @@ def cli(cdl_preshared_key, target_ip, target_username, target_password):
     :return: None
     """
 
+    # install ansible role for panos
+    try:
+        install_panos = Popen('ansible-galaxy install PaloAltoNetworks.paloaltonetworks', shell=True, stdout=PIPE,
+                              stderr=PIPE)
+        stdout, stderr = install_panos.communicate()
+        if 'ERROR' in stderr.decode('ascii'):
+            raise ValueError(stderr.decode('ascii'))
+        install_panos.wait()
+        print(stdout.decode('ascii'))
+    except ValueError as err:
+        print(err.args)
+        exit(1)
+
+    # install ansible collection for skillet player
+    try:
+        install_panos = Popen('ansible-galaxy collection install nembery.skillet', shell=True, stdout=PIPE,
+                              stderr=PIPE)
+        stdout, stderr = install_panos.communicate()
+        if 'ERROR' in stderr.decode('ascii'):
+            raise ValueError(stderr.decode('ascii'))
+        install_panos.wait()
+        print(stdout.decode('ascii'))
+    except ValueError as err:
+        print(err.args)
+        exit(1)
+
     # create a simple provider dict to convert to json and pass as ansible extra-var
     provider_dict = {}
     provider_dict['provider'] = {}
@@ -47,12 +73,12 @@ def cli(cdl_preshared_key, target_ip, target_username, target_password):
     print(f'configuring device {target_ip} as user {target_username}')
 
     # ansible command line entry with extra vars
-    playbook_cmd = f'ansible-playbook -i inventory.ini cdl.yml' \
+    playbook_cmd = f' ansible-playbook -i inventory.ini cdl.yml' \
                    f' -e cdl_psk={cdl_preshared_key}' \
                    f' -e "{xvar_provider}"'
 
     # run the playbook and wait until complete
-    run_playbook = subprocess.Popen(playbook_cmd, shell=True)
+    run_playbook = Popen(playbook_cmd, shell=True)
     run_playbook.wait()
 
 
