@@ -37,18 +37,6 @@ def cli(cdl_preshared_key, target_ip, target_username, target_password):
     :return: None
     """
 
-    '''
-    # os.environ.copy or similar to pick up vars
-    check_env = Popen('env')
-    check_env.wait()
-    print(check_env)
-    python_venv = os.environ.copy()
-    python_venv[
-        "PATH"] = "/home/cnc_user/.pan_cnc/panhandler/repositories/logging-skillets/cdl_playbook_global/.venv/bin:" + \
-                  python_venv["PATH"]
-    print('new path is', python_venv["PATH"])
-    '''
-
     # install ansible panos role
     try:
         print('install PaloAltoNetworks.paloaltonetworks role')
