@@ -16,7 +16,7 @@
 # Authors: Scott Shoaf, Nathan Embery
 
 import json
-from subprocess import PIPE, STDOUT, Popen, CalledProcessError, check_output
+from subprocess import PIPE, Popen
 
 import click
 
