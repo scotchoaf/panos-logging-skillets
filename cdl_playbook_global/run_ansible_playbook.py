@@ -39,8 +39,12 @@ def cli(cdl_preshared_key, target_ip, target_username, target_password):
 
     # os.environ.copy or similar to pick up vars
     check_env = Popen('env')
+    check_env.wait()
     print(check_env)
     python_venv = os.environ.copy()
+    python_venv["PATH"] = "~/.local/bin" + python_venv["PATH"]
+    print('new path', python_venv["PATH"])
+
 
     # install ansible panos role
     try:
