@@ -42,14 +42,14 @@ def cli(cdl_preshared_key, target_ip, target_username, target_password):
         install_panos = Popen('ansible-galaxy install PaloAltoNetworks.paloaltonetworks', shell=True, stdout=PIPE,
                               stderr=PIPE)
         stdout, stderr = install_panos.communicate()
-        # create WARNING output if already installed
-        if 'WARNING' in stderr.decode('ascii'):
-            print(stderr.decode('ascii'))
         # if ERROR in output message then raise to force except
         if 'ERROR' in stderr.decode('ascii'):
             raise ValueError(stderr.decode('ascii'))
-        install_panos.wait()
+            # create WARNING output if already installed
+        elif 'WARNING' in stderr.decode('ascii'):
+            print(stderr.decode('ascii'))
         print(stdout.decode('ascii'))
+        install_panos.wait()
     except ValueError as err:
         print(err.args)
         exit(1)
@@ -63,8 +63,11 @@ def cli(cdl_preshared_key, target_ip, target_username, target_password):
         # if ERROR in output message then raise to force except
         if 'ERROR' in stderr.decode('ascii'):
             raise ValueError(stderr.decode('ascii'))
-        install_panos.wait()
+        # create WARNING output if already installed
+        elif 'WARNING' in stderr.decode('ascii'):
+            print(stderr.decode('ascii'))
         print(stdout.decode('ascii'))
+        install_panos.wait()
     except ValueError as err:
         print(err.args)
         exit(1)
