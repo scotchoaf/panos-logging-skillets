@@ -36,11 +36,16 @@ def cli(cdl_preshared_key, target_ip, target_username, target_password):
     :return: None
     """
 
-    # install ansible role for panos
+    # install ansible panos role
     try:
+        print('install PaloAltoNetworks.paloaltonetworks role')
         install_panos = Popen('ansible-galaxy install PaloAltoNetworks.paloaltonetworks', shell=True, stdout=PIPE,
                               stderr=PIPE)
         stdout, stderr = install_panos.communicate()
+        # create WARNING output if already installed
+        if 'WARNING' in stderr.decode('ascii'):
+            print(stderr.decode('ascii'))
+        # if ERROR in output message then raise to force except
         if 'ERROR' in stderr.decode('ascii'):
             raise ValueError(stderr.decode('ascii'))
         install_panos.wait()
@@ -49,11 +54,13 @@ def cli(cdl_preshared_key, target_ip, target_username, target_password):
         print(err.args)
         exit(1)
 
-    # install ansible collection for skillet player
+    # install ansible skillet player collection
     try:
+        print('install nembery.skillets collection as skillet player')
         install_panos = Popen('ansible-galaxy collection install nembery.skillet', shell=True, stdout=PIPE,
                               stderr=PIPE)
         stdout, stderr = install_panos.communicate()
+        # if ERROR in output message then raise to force except
         if 'ERROR' in stderr.decode('ascii'):
             raise ValueError(stderr.decode('ascii'))
         install_panos.wait()
