@@ -103,12 +103,14 @@
         cmd: 'request logging-service-forwarding certificate delete'
       register: cdl_delete_response
       until: cdl_delete_response is not failed
-      retries: 10
-      delay: 10
+      retries: 2
+      delay: 5
+      ignore_errors: True
 
     # debug output to show cert delete message
     - name: delete cdl cert response
       debug: msg='{{ (cdl_delete_response.stdout | from_json).response.result }}'
+      when: cdl_delete_response.stdout is defined
 
     # fetch new certificate using input preshared key (psk)
     - name: fetch cdl certificate
