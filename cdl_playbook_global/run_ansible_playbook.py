@@ -16,7 +16,6 @@
 # Authors: Scott Shoaf, Nathan Embery
 
 import json
-import os
 from subprocess import PIPE, Popen
 
 import click
