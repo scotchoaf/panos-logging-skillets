@@ -42,6 +42,10 @@ def cli(cdl_preshared_key, target_ip, target_username, target_password):
     check_env.wait()
     print(check_env)
     python_venv = os.environ.copy()
+    python_venv[
+        "PATH"] = "/home/cnc_user/.pan_cnc/panhandler/repositories/logging-skillets/cdl_playbook_global/.venv/bin:" + \
+                  python_venv["PATH"]
+    print('new path is', python_venv["PATH"])
 
     # install ansible panos role
     try:
@@ -90,7 +94,7 @@ def cli(cdl_preshared_key, target_ip, target_username, target_password):
     print(f'configuring device {target_ip} as user {target_username}')
 
     # ansible command line entry with extra vars
-    playbook_cmd = f'./ansible-playbook -i inventory.ini cdl.yml' \
+    playbook_cmd = f'ansible-playbook -i inventory.ini cdl.yml' \
                    f' -e cdl_psk={cdl_preshared_key}' \
                    f' -e "{xvar_provider}"'
 
