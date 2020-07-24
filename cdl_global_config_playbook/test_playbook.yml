@@ -13,20 +13,29 @@
       include_vars: 'vars.yml'
       no_log: 'yes'
 
-    # this is a greenfield playbook adding a new cert so delete existing cert if exists
-    - name: delete cdl certificate
-      panos_op:
-        provider: '{{ provider }}'
-        cmd: 'request logging-service-forwarding certificate delete'
-      register: cdl_delete_response | default('')
-      until: cdl_delete_response is not failed
-      retries: 2
-      delay: 5
-      ignore_errors: True
+    # read in the skillet content from a repo
+    - name: download the CDL global config skillet
+      git:
+        repo: '{{ skillet_repo }}'
+        dest: '{{ playbook_dir }}/files'
+        version: '{{ branch }}'
+      tags:
+        - always
 
-    # debug output to show cert delete message
-    - name: delete cdl cert response
-      debug: msg='{{ (cdl_delete_response.stdout | from_json).response.result }}'
+    # play the named skillet to configure fw elements
+    - name: play cdl global config skillet
+      panos_skillet:
+        skillet_path: '{{ playbook_dir }}/files'
+        skillet: '{{ skillet }}'
+        provider: '{{ provider }}'
+        vars: '{{ skillet_vars }}'
+      register: skillet_output
+
+    # output of config push
+    - name: dump test output
+      debug:
+        msg: '{{ skillet_output }}'
+
 
     # force quit to test part of playbook
     - set_fact: stop_playbook='stop'
