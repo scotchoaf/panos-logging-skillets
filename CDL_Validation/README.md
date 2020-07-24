@@ -1,8 +1,8 @@
 # Validate Cortex Data Lake Connectivity and Logging
 
 This is a validation skillet to make sure CDL is up and running as expected. It deploys a combination of checking both configurations and 
-the systems current connectivity state. As you run the validation skillet and see things that haven't passed, instructions are included in 
-the skillet for each test performed on where to get more information and troubleshoot.
+the systems current connectivity state. As you run the validation skillet and see things that haven't passed, instructions are included within 
+the skillet file for each test performed and where to get more information for each test.
 
 ### How to use this skillet
 
