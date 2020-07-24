@@ -1,0 +1,51 @@
+name: move_dhcp_server_to_dhcp_relay
+label: Move NGFW DHCP server to VLAN interface and add DHCP relay
+description: |
+  To enable EAL logging for DHCP, pre-10.0 PAN-OS requires DHCP relay
+  in the traffic logs. This skillet will capture the existing DHCP server
+  configuration, move to a logical VLAN interface, and enable DHCP relay
+  for the original DHCP server interface.
+type: panos
+labels:
+  collection:
+    - CDL
+    - IoT
+
+variables:
+
+  - name: dhcp_server_interface
+    description: interface name currently associated to the DHCP local server
+    default: ethernet1/2
+    type_hint: text
+  - name: vlan_interface
+    description: VLAN logical interface number that become vlan.X
+    default: 1
+    type_hint: number
+  - name: dhcp_vr
+    description: name for new virtual router for the vlan interface
+    default: DHCP_VR
+    type_hint: text
+
+snippets:
+
+- name: device_config_file
+  cmd: parse
+  variable: config
+  outputs:
+    - name: dhcp_server_config_object
+      capture_object: /config/devices/entry[@name='localhost.localdomain']/network/dhcp
+    - name: dhcp_server_config_pattern
+      capture_pattern: /config/devices/entry[@name='localhost.localdomain']/network/dhcp
+
+- name: get_logging_status
+  cmd: cli
+      # This cli command will return a text blob
+  cmd_str: show network dhcp interface ethernet1/2
+  output_type: text
+  outputs:
+        # let's capture a variable called 'connected_server_ip'
+    - name: capture_output
+          # this will search the text returned from the cli command and return the first match found using this regex
+          # pattern
+      capture_pattern: (.*)
+
