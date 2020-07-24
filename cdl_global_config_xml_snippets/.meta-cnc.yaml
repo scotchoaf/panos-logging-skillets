@@ -3,7 +3,7 @@
 # unique snippet name
 name: cdl_global_config_panos
 # label used for menu selection
-label: Cortex Data Lake global configuration
+label: Cortex Data Lake global configuration using XML snippets
 description: Enable Cortex Data Lake (CDL) with EAL and associated region. Also configures CDL for system and config logs
 type: panos
 
