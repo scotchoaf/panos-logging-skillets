@@ -1,7 +1,7 @@
 # skillet preamble information used by panhandler
 # ---------------------------------------------------------------------
 # unique snippet name
-name: cdl_global_config_panos
+name: cdl_global_config_panos_xml
 # label used for menu selection
 label: Cortex Data Lake global configuration using XML snippets
 description: Enable Cortex Data Lake (CDL) with EAL and associated region. Also configures CDL for system and config logs

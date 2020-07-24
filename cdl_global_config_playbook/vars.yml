@@ -8,9 +8,9 @@ provider:
 cdl_psk: 'get me at apps.paloaltonetworks.com'
 
 # skillet repo content for the playbook
-skillet_repo: 'https://github.com/scotchoaf/panos_tools.git'
-branch: 'cdl_configs'
-skillet: 'cdl_global_config_panos'
+skillet_repo: 'https://github.com/PaloAltoNetworks/panos-logging-skillets.git'
+branch: 'master'
+skillet: 'cdl_global_config_panos_xml'
 
 # vars passed to the skillet
 skillet_vars:
