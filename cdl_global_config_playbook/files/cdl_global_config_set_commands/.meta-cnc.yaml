@@ -1,0 +1,54 @@
+# skillet preamble information used by panhandler
+# ---------------------------------------------------------------------
+# unique snippet name
+name: mySkillet
+# label used for menu selection
+label: my_skillet_label
+description: this is what my skillet does
+
+# type of device configuration
+# common types are panorama, panos, and template
+# https://github.com/PaloAltoNetworks/panhandler/blob/develop/docs/metadata_configuration.rst
+type: template
+# preload static or default-based templates
+extends:
+
+# grouping of like snippets for dynamic menu creation in panhandler
+labels:
+  collection:
+    - myCollection
+
+# ---------------------------------------------------------------------
+# end of preamble section
+
+# variables section
+# ---------------------------------------------------------------------
+# variables used in the configuration templates
+# type_hint defines the form field used by panhandler
+# type_hints examples include text, ip_address, or dropdown
+variables:
+  - name: preshared_key
+    description: Pre-shared Key to onboard firewall to CDL
+    default: my_pre_shared_key
+    type_hint: text
+  - name: cdl_region
+    description: region for CDL license
+    default: americas
+    type_hint: dropdown
+    dd_list:
+      - key: americas
+        value: americas
+      - key: europe
+        value: europe
+# ---------------------------------------------------------------------
+# end of variables section
+
+# snippets section
+# ---------------------------------------------------------------------
+snippets:
+# contextual name with the name of the template file
+  - name: cdl_cli_commands
+    file: cdl_cli_commands.conf
+
+# ---------------------------------------------------------------------
+# end of snippets section
