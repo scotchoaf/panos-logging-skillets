@@ -6,9 +6,7 @@ This skillet contains configuration operation commands(set commands) to configur
 
 * Need versions 9.0.6 or higher for everything to run smoothly
 * Need to generate PSK via [the Hub](https://apps.paloaltonetworks.com/apps)
-* Once at the hub go into Cortex Data Lake -> Firewall On-Boarding -> Generate PSK
-* Need to select a region to set the logging service forwarding towards
-* This is done via activating the CDL app in the hub
+* Need to select a CDL region by activating the app in [the Hub](https://apps.paloaltonetworks.com/apps)
 
 ### How to use this Skillet
 
