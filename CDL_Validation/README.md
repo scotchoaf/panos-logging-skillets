@@ -1,4 +1,4 @@
-#Validate CDL connectivity and Logging
+# Validate CDL connectivity and Logging
 
 
 ### CDL enabled Test
