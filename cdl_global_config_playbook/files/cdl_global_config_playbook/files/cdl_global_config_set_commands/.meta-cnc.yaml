@@ -1,11 +1,10 @@
 # skillet preamble information used by panhandler
 # ---------------------------------------------------------------------
 # unique snippet name
-name: cdl_configuration_cli_commands
+name: mySkillet
 # label used for menu selection
-label: set and operation commands to enable Cortex Data Lake
-description: |
-  set of CLI commands to set up Cortex Data Lake along with validation checks
+label: my_skillet_label
+description: this is what my skillet does
 
 # type of device configuration
 # common types are panorama, panos, and template
@@ -17,7 +16,7 @@ extends:
 # grouping of like snippets for dynamic menu creation in panhandler
 labels:
   collection:
-    - CDL
+    - myCollection
 
 # ---------------------------------------------------------------------
 # end of preamble section
