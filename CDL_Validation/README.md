@@ -1,5 +1,6 @@
 # Validate CDL connectivity and Logging
 
+Validation skillet to make sure CDL is up and running as expected. It deploys a combination of checking configurations and the systems state. As you run the validation skillet and see things that haven't passed, instructions are included in the skillet for each test performed on where to get more information and troubleshoot.
 
 ### CDL enabled Test
 
