@@ -47,8 +47,8 @@ variables:
 # ---------------------------------------------------------------------
 snippets:
 # contextual name with the name of the template file
-  - name: cdl_set_commands
-    file: cdl_set_commands.conf
+  - name: cdl_cli_commands
+    file: cdl_cli_commands.conf
 
 # ---------------------------------------------------------------------
 # end of snippets section

@@ -6,8 +6,11 @@ the skillet file for each test performed and where to get more information for e
 
 ### How to use this skillet
 
-This skillet is designed to be used and ran with [Panhandler](http://localhost:8080/panhandler/). You want to import the skillet repository so it shows up in your Skillet Collections under Validation Skillets. Once imported, open and enter firewall information to run the skillet against your 
-firewall. 
+This skillet is designed to be played with [panHandler](https://live.paloaltonetworks.com/t5/skillet-tools/install-and-get-started-with-panhandler/ta-p/307916)
+and requires API connectivity between panHandler and the NGFW in order to capture
+system state information not found in the configuration files.
+
+When playing the skillet in panHandler select `Online` mode.
 
 ### Key items
 
