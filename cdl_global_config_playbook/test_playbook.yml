@@ -18,6 +18,20 @@
         path: '{{ playbook_dir }}/files/panos-logging-skillets'
         state: absent
 
+    #- name: display ip ranges
+    #  debug: msg="{{ lookup('url', 'https://ip-ranges.amazonaws.com/ip-ranges.json', split_lines=False) }}"
+
+    - name: Create a directory if it does not exist
+      file:
+        path: '{{ playbook_dir }}/files'
+        state: directory
+        mode: '0755'
+
+    - name: Store file into files/testme
+      get_url:
+        url: https://ip-ranges.amazonaws.com/ip-ranges.json
+        dest: '{{ playbook_dir }}/files/test.json'
+
     # read in the skillet content from a repo
     - name: download the CDL global config skillet
       git:

@@ -5,3 +5,6 @@
 # python virtual environments
 env/
 venv/
+
+# files directory
+files/
