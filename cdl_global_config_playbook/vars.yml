@@ -8,8 +8,8 @@ provider:
 cdl_psk: 'get me at apps.paloaltonetworks.com'
 
 # skillet repo content for the playbook
+# for reference only as pointer to skillet content
 skillet_repo: 'https://github.com/PaloAltoNetworks/panos-logging-skillets.git'
-skillet_repo2: 'https://github.com/PaloAltoNetworks/panos-logging-skillets.git'
 branch: 'master'
 skillet: 'cdl_global_config_panos_xml'
 
