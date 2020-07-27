@@ -24,6 +24,11 @@
           - requests_toolbelt
           - skilletlib
 
+    - name: remove panos-logging-skillets files - latest updates pulled later in playbook
+      file:
+        path: '{{ playbook_dir }}/files/panos-logging-skillets'
+        state: absent
+
     # check access to the system and pull a few values
     - name: show system info
       panos_op:
@@ -232,10 +237,10 @@
       debug: msg="skillet vars are {{ skillet_vars }}"
 
     # read in the skillet content from a repo
-    - name: download the CDL global config skillet
+    - name: download panos-logging-skillets
       git:
         repo: '{{ skillet_repo }}'
-        dest: '{{ playbook_dir }}/files'
+        dest: '{{ playbook_dir }}/files/panos-logging-skillets'
         version: '{{ branch }}'
       tags:
         - always
@@ -243,7 +248,7 @@
     # play the named skillet to configure fw elements
     - name: play cdl global config skillet
       panos_skillet:
-        skillet_path: '{{ playbook_dir }}/files'
+        skillet_path: '{{ playbook_dir }}/files/panos-logging-skillets'
         skillet: '{{ skillet }}'
         provider: '{{ provider }}'
         vars: '{{ skillet_vars }}'
