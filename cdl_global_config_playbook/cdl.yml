@@ -24,6 +24,11 @@
           - requests_toolbelt
           - skilletlib
 
+    - name: remove panos-logging-skillets files - latest updates pulled later in playbook
+      file:
+        path: '{{ playbook_dir }}/files/panos-logging-skillets'
+        state: absent
+
     # check access to the system and pull a few values
     - name: show system info
       panos_op:
@@ -231,19 +236,30 @@
     - name: debug skillet_vars
       debug: msg="skillet vars are {{ skillet_vars }}"
 
-    # read in the skillet content from a repo
-    - name: download the CDL global config skillet
-      git:
-        repo: '{{ skillet_repo }}'
-        dest: '{{ playbook_dir }}/files'
-        version: '{{ branch }}'
-      tags:
-        - always
+    # remove directory to ensure a clean load
+    - name: Recursively remove directory
+      file:
+        path: '{{ playbook_dir }}/files/cdl_global_config_xml_snippets'
+        state: absent
+
+    # create the skillet file directory
+    - name: Create skillet directory if it does not exist
+      file:
+        path: '{{ playbook_dir }}/files/cdl_global_config_xml_snippets'
+        state: directory
+        mode: '0755'
+
+    # download and store the skillet file
+    - name: Store store skillet file in files/cdl_global_config_xml_snippets
+      get_url:
+        url: https://raw.githubusercontent.com/PaloAltoNetworks/panos-logging-skillets/master/cdl_global_config_xml_snippets/.meta-cnc.yaml
+        validate_certs: no
+        dest: '{{ playbook_dir }}/files/cdl_global_config_xml_snippets/.meta-cnc.yaml'
 
     # play the named skillet to configure fw elements
     - name: play cdl global config skillet
       panos_skillet:
-        skillet_path: '{{ playbook_dir }}/files'
+        skillet_path: '{{ playbook_dir }}/files/cdl_global_config_xml_snippets'
         skillet: '{{ skillet }}'
         provider: '{{ provider }}'
         vars: '{{ skillet_vars }}'
@@ -253,6 +269,12 @@
     - name: dump test output
       debug:
         msg: '{{ skillet_output }}'
+
+    # remove directory to ensure a clean load
+    - name: Recursively remove directory
+      file:
+        path: '{{ playbook_dir }}/files/cdl_global_config_xml_snippets'
+        state: absent
 
     - name: commit config
       panos_commit:

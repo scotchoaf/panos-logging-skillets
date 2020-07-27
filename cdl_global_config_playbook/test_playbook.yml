@@ -13,19 +13,30 @@
       include_vars: 'vars.yml'
       no_log: 'yes'
 
-    # read in the skillet content from a repo
-    - name: download the CDL global config skillet
-      git:
-        repo: '{{ skillet_repo }}'
-        dest: '{{ playbook_dir }}/files'
-        version: '{{ branch }}'
-      tags:
-        - always
+    # remove directory to ensure a clean load
+    - name: Recursively remove directory
+      file:
+        path: '{{ playbook_dir }}/files/cdl_global_config_xml_snippets'
+        state: absent
+
+    # create the skillet file directory
+    - name: Create skillet directory if it does not exist
+      file:
+        path: '{{ playbook_dir }}/files/cdl_global_config_xml_snippets'
+        state: directory
+        mode: '0755'
+
+    # download and store the skillet file
+    - name: Store file into files/testme
+      get_url:
+        url: https://raw.githubusercontent.com/PaloAltoNetworks/panos-logging-skillets/master/cdl_global_config_xml_snippets/.meta-cnc.yaml
+        validate_certs: no
+        dest: '{{ playbook_dir }}/files/cdl_global_config_xml_snippets/.meta-cnc.yaml'
 
     # play the named skillet to configure fw elements
     - name: play cdl global config skillet
       panos_skillet:
-        skillet_path: '{{ playbook_dir }}/files'
+        skillet_path: '{{ playbook_dir }}/files/cdl_global_config_xml_snippets'
         skillet: '{{ skillet }}'
         provider: '{{ provider }}'
         vars: '{{ skillet_vars }}'
@@ -36,6 +47,11 @@
       debug:
         msg: '{{ skillet_output }}'
 
+    # option to remove and clean out directory when playbook done
+    - name: remote skillet directory cdl_global_config_xml_snippets
+      file:
+        path: '{{ playbook_dir }}/files/cdl_global_config_xml_snippets'
+        state: absent
 
     # force quit to test part of playbook
     - set_fact: stop_playbook='stop'
