@@ -88,7 +88,6 @@ def cli(cdl_preshared_key, target_ip, target_username, target_password):
                    f' -e "{xvar_provider}"'
 
     # run the playbook and wait until complete
-    print(playbook_cmd)
     run_playbook = Popen(playbook_cmd, shell=True)
     run_playbook.wait()
 
