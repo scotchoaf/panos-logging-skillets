@@ -198,7 +198,7 @@ snippets:
       - name: sending_to_panorama_enabled
         capture_list: |-
           /config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='vsys1']/log-settings/profiles/entry
-          /match-list/entry/send-to-panorama[text()='yes']/../@name
+          /match-list/entry/send-to-panorama[text()='yes']/../../../@name
 
     # Xpath gets list of all possible profiles then filter to profiles that
     # are not in sending_to_panorama AKA they arent sending to panorama
@@ -206,7 +206,8 @@ snippets:
     # profiles_not_sending_panorama list, if it's not present it filters it out.
       - name: profiles_not_sending_panorama
         capture_list: |-
-          /config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='vsys1']/log-settings/profiles/entry/match-list/entry/send-to-panorama/../@name
+          /config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='vsys1']/log-settings/profiles/entry/
+          match-list/entry/send-to-panorama/../../../@name
         filter_items: item not in sending_to_panorama_enabled
 
       # get the complete object to parse for output message values
@@ -270,7 +271,8 @@ snippets:
     test: eal_not_enabled | length == 0
     severity: high
     fail_message: |
-      profiles that don't have eal enabled are: {{ eal_not_enabled }}
+      profiles that don't have eal enabled are:
+      {{ eal_not_enabled }}
     pass_message: |
       all profiles have eal enabled
     documentation_link: https://docs.paloaltonetworks.com/pan-os/8-1/pan-os-admin/monitoring/enhanced-application-logs
