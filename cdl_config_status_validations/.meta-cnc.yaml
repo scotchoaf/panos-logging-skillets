@@ -223,7 +223,7 @@ snippets:
     test: profiles_not_sending_panorama | length == 0
     severity: high
     fail_message: |
-      profiles not sending to panorama are:
+      profiles and associated rules not sending to panorama are:
 
       (profile name, rule name, log type)
 
