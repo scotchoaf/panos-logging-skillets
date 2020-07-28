@@ -223,7 +223,9 @@ snippets:
     severity: high
     fail_message: |
       profiles not sending to panorama are:
+
       (profile name, rule name, log type)
+
       {%- for profile_entry in log_settings_object %}
         {%- for key, profile in profile_entry.items() %}
           {%- set profile_name = profile['@name'] %}
