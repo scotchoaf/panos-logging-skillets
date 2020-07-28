@@ -282,10 +282,10 @@ snippets:
     test: eal_not_enabled | length == 0
     severity: high
     fail_message: |
-      profiles that don't have eal enabled are:
+      profiles that don't have EAL enabled are:
       {{ eal_not_enabled }}
     pass_message: |
-      all profiles have eal enabled
+      all profiles have EAL enabled
     documentation_link: https://docs.paloaltonetworks.com/pan-os/8-1/pan-os-admin/monitoring/enhanced-application-logs
 
 # ---------------------------------------------------------------------
