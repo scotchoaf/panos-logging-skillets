@@ -228,18 +228,18 @@ snippets:
       profiles and associated rules not sending to panorama are:
 
       (profile name, rule name, log type)
-      {# loop across the log forwarding profile object to find non CDL forwarding rules #}
+      {#- loop across the log forwarding profile object to find non CDL forwarding rules #}
       {%- for profile_entry in log_settings_object %}
         {%- for key, profile in profile_entry.items() %}
           {%- set profile_name = profile['@name'] %}
           {%- for key2, matchList in profile['match-list'].items() %}
-            {# check if a single rule entry without a list for iteraction #}
+            {#- check if a single rule entry without a list for iteraction #}
             {%- if matchList[1] | length == 0 %}
               {%- if matchList['send-to-panorama'] == 'no' %}
                 {{ profile_name }}, {{ matchList['@name'] }}, {{ matchList['log-type'] }}
               {%- endif %}
             {%- else %}
-              {# for multiple rules iterate across each list item to find bad rules #}
+              {#- for multiple rules iterate across each list item to find bad rules #}
               {%- for logRule in matchList %}
                 {%- if logRule['send-to-panorama'] == 'no' %}
                 {{ profile_name }}, {{ logRule['@name'] }}, {{ logRule['log-type'] }}
