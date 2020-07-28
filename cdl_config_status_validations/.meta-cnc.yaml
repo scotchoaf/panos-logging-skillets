@@ -222,20 +222,20 @@ snippets:
     test: profiles_not_sending_panorama | length == 0
     severity: high
     fail_message: |
-        profiles and rules not sending to panorama are:
-        (profile name, rule name, log type)
-        {%- for profile_entry in log_settings_object %}
-          {%- for key, profile in profile_entry.items() %}
-            {%- set profile_name = profile['@name'] %}
-            {%- for key2, matchList in profile['match-list'].items() %}
-              {%- for logRule in matchList %}
-                {%- if logRule['send-to-panorama'] == 'no' %}
-                  {{ profile_name }}, {{ logRule['@name'] }}, {{ logRule['log-type'] }}
-                {%- endif %}
-              {%- endfor %}
+      profiles not sending to panorama are:
+      (profile name, rule name, log type)
+      {%- for profile_entry in log_settings_object %}
+        {%- for key, profile in profile_entry.items() %}
+          {%- set profile_name = profile['@name'] %}
+          {%- for key2, matchList in profile['match-list'].items() %}
+            {%- for logRule in matchList %}
+              {%- if logRule['send-to-panorama'] == 'no' %}
+                {{ profile_name }}, {{ logRule['@name'] }}, {{ logRule['log-type'] }}
+              {%- endif %}
             {%- endfor %}
           {%- endfor %}
         {%- endfor %}
+      {%- endfor %}
     pass_message: |
       all profiles are sending to panorama
     documentation_link: https://docs.paloaltonetworks.com/pan-os/9-0/pan-os-admin/monitoring/configure-log-forwarding.html
