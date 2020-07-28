@@ -185,7 +185,7 @@ snippets:
 
     fail_message: |
       No CDL Customer ID present, check if certificate fetch is successful
-    pass_message: Firewall region is set as {{CDLcustomerID}}
+    pass_message: Cortex Data Lake customer ID is set as {{CDLcustomerID}}
     documentation_link: https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000CmMtCAK
 
   - name: device_config_file
