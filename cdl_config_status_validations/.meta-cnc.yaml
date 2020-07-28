@@ -17,6 +17,7 @@ extends:
 labels:
   collection:
     - IoT
+    - CDL
 
 # ---------------------------------------------------------------------
 # end of preamble section
