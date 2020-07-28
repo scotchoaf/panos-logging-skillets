@@ -43,7 +43,7 @@ snippets:
         capture_value: /config/devices/entry/deviceconfig/setting/logging/logging-service-forwarding/enable/text()
 
   - name: cdl_enabled_test
-    label: cdl enabled globally
+    label: Cortex Data Lake enabled in global configuration
     test:  cdl_enabled == "yes"
 
     fail_message: |
@@ -59,7 +59,7 @@ snippets:
         capture_value: /config/devices/entry/deviceconfig/setting/logging/logging-service-forwarding/logging-service-regions/text()
 
   - name: logging_service_regions_test
-    label: logging service region set
+    label: Cortext Data Lake logging region is configured
     test:  logging_service_regions | length
 
     fail_message: |
@@ -75,7 +75,7 @@ snippets:
         capture_value: /config/devices/entry/deviceconfig/setting/logging/enhanced-application-logging/enable/text()
 
   - name: enhanced_application_logging_enabled_test
-    label: eal enabled globally
+    label: Enhanced Applicationg Logging is globally enabled
     test:  enhanced_application_logging_enabled == "yes"
 
     fail_message: |
@@ -136,23 +136,23 @@ snippets:
         capture_pattern: Certificate expired:\s{1,2}(.*?)\s{1,2}
 
   - name: cert_chain_verification_test
-    label: test to see if the cert verification is there or not
-    test: cert_chain_verification == "OK"
+    label: CDL certification chain is verified
+    test: certificate cert_chain_verification == "OK"
     fail_message: |
       Certificate chain is not verified
     pass_message: Certificate chain is verified
     documentation_link: https://docs.paloaltonetworks.com/cortex/cortex-data-lake/cortex-data-lake-getting-started/get-started-with-cortex-data-lake/key.html
 
   - name: private_public_key_match_test
-    label: Test key match
-    test: private_public_key_match == "Yes"
+    label: CDL certificate private and public keys match
+    test: certificate private_public_key_match == "Yes"
     fail_message: |
       There is no private public key match
     pass_message: There is a private public key match
     documentation_link: https://docs.paloaltonetworks.com/cortex/cortex-data-lake/cortex-data-lake-getting-started/get-started-with-cortex-data-lake/key.html
 
   - name: certificate_expired_test
-    label: Test certificate expiration
+    label: CDL certificate has not expired
     test: certificate_expired == "No"
     fail_message: |
       Certificate has expired
@@ -171,7 +171,7 @@ snippets:
         capture_value: /custinfo/entry[@name="1"]/customer-id/text()
 
   - name: CDLregion_test
-    label: test if CDL region set
+    label: CDL customer region captured
     test:  CDLregion | length
 
     fail_message: |
@@ -180,7 +180,7 @@ snippets:
     documentation_link: https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000CmMtCAK
 
   - name: CDLcustomerID_test
-    label: test if CDL customerID set
+    label: CDL customerID exists
     test:  CDLcustomerID | length
 
     fail_message: |
@@ -217,7 +217,7 @@ snippets:
 
 
   - name: check_sending_to_panorama_enabled
-    label: check that all profiles are sending to Cortex Data Lake
+    label: All profiles are forwarding to Cortex Data Lake
     # if this test passes that means there is nothing in profiles_not_sending_panorama
     # meaning that every profile is currently sending to panorama
     # the complex output uses a captured dict object and iterates across profiles and rules
@@ -276,7 +276,7 @@ snippets:
 
 
   - name: check_eal_enabled
-    label: check that all profiles have eal enabled
+    label: Enhanced Application Logging is enabled for all log forwarding profiles
   #if this test passes that means there is nothing in eal_not_enabled
   #meaning that every profile currently has eal enabled
     test: eal_not_enabled | length == 0
