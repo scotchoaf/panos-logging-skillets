@@ -136,8 +136,8 @@ snippets:
         capture_pattern: Certificate expired:\s{1,2}(.*?)\s{1,2}
 
   - name: cert_chain_verification_test
-    label: CDL certification chain is verified
-    test: certificate cert_chain_verification == "OK"
+    label: CDL certificate chain is verified
+    test: cert_chain_verification == "OK"
     fail_message: |
       Certificate chain is not verified
     pass_message: Certificate chain is verified
@@ -145,7 +145,7 @@ snippets:
 
   - name: private_public_key_match_test
     label: CDL certificate private and public keys match
-    test: certificate private_public_key_match == "Yes"
+    test: private_public_key_match == "Yes"
     fail_message: |
       There is no private public key match
     pass_message: There is a private public key match
