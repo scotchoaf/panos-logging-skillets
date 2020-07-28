@@ -17,6 +17,7 @@ extends:
 labels:
   collection:
     - IoT
+    - CDL
 
 # ---------------------------------------------------------------------
 # end of preamble section
@@ -42,7 +43,7 @@ snippets:
         capture_value: /config/devices/entry/deviceconfig/setting/logging/logging-service-forwarding/enable/text()
 
   - name: cdl_enabled_test
-    label: cdl enabled globally
+    label: Cortex Data Lake enabled in global configuration
     test:  cdl_enabled == "yes"
 
     fail_message: |
@@ -58,7 +59,7 @@ snippets:
         capture_value: /config/devices/entry/deviceconfig/setting/logging/logging-service-forwarding/logging-service-regions/text()
 
   - name: logging_service_regions_test
-    label: logging service region set
+    label: Cortext Data Lake logging region is configured
     test:  logging_service_regions | length
 
     fail_message: |
@@ -74,7 +75,7 @@ snippets:
         capture_value: /config/devices/entry/deviceconfig/setting/logging/enhanced-application-logging/enable/text()
 
   - name: enhanced_application_logging_enabled_test
-    label: eal enabled globally
+    label: Enhanced Applicationg Logging is globally enabled
     test:  enhanced_application_logging_enabled == "yes"
 
     fail_message: |
@@ -135,7 +136,7 @@ snippets:
         capture_pattern: Certificate expired:\s{1,2}(.*?)\s{1,2}
 
   - name: cert_chain_verification_test
-    label: test to see if the cert verification is there or not
+    label: CDL certificate chain is verified
     test: cert_chain_verification == "OK"
     fail_message: |
       Certificate chain is not verified
@@ -143,7 +144,7 @@ snippets:
     documentation_link: https://docs.paloaltonetworks.com/cortex/cortex-data-lake/cortex-data-lake-getting-started/get-started-with-cortex-data-lake/key.html
 
   - name: private_public_key_match_test
-    label: Test key match
+    label: CDL certificate private and public keys match
     test: private_public_key_match == "Yes"
     fail_message: |
       There is no private public key match
@@ -151,7 +152,7 @@ snippets:
     documentation_link: https://docs.paloaltonetworks.com/cortex/cortex-data-lake/cortex-data-lake-getting-started/get-started-with-cortex-data-lake/key.html
 
   - name: certificate_expired_test
-    label: Test certificate expiration
+    label: CDL certificate has not expired
     test: certificate_expired == "No"
     fail_message: |
       Certificate has expired
@@ -170,7 +171,7 @@ snippets:
         capture_value: /custinfo/entry[@name="1"]/customer-id/text()
 
   - name: CDLregion_test
-    label: test if CDL region set
+    label: CDL customer region captured
     test:  CDLregion | length
 
     fail_message: |
@@ -179,12 +180,12 @@ snippets:
     documentation_link: https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000CmMtCAK
 
   - name: CDLcustomerID_test
-    label: test if CDL customerID set
+    label: CDL customerID exists
     test:  CDLcustomerID | length
 
     fail_message: |
       No CDL Customer ID present, check if certificate fetch is successful
-    pass_message: Firewall region is set as {{CDLcustomerID}}
+    pass_message: Cortex Data Lake customer ID is set as {{CDLcustomerID}}
     documentation_link: https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000CmMtCAK
 
   - name: device_config_file
@@ -197,7 +198,7 @@ snippets:
       - name: sending_to_panorama_enabled
         capture_list: |-
           /config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='vsys1']/log-settings/profiles/entry
-          /match-list/entry/send-to-panorama[text()='yes']/../@name
+          /match-list/entry/send-to-panorama[text()='yes']/../../../@name
 
     # Xpath gets list of all possible profiles then filter to profiles that
     # are not in sending_to_panorama AKA they arent sending to panorama
@@ -205,18 +206,50 @@ snippets:
     # profiles_not_sending_panorama list, if it's not present it filters it out.
       - name: profiles_not_sending_panorama
         capture_list: |-
-          /config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='vsys1']/log-settings/profiles/entry/match-list/entry/send-to-panorama/../@name
+          /config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='vsys1']/log-settings/profiles/entry/
+          match-list/entry/send-to-panorama/../../../@name
         filter_items: item not in sending_to_panorama_enabled
+
+      # get the complete object to parse for output message values
+      - name: log_settings_object
+        capture_object: |-
+          /config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='vsys1']/log-settings/profiles/entry
 
 
   - name: check_sending_to_panorama_enabled
-    label: check that all profiles are sending to Cortex Data Lake
-  #if this test passes that means there is nothing in profiles_not_sending_panorama
-  #meaning that every profile is currently sending to panorama
+    label: All profiles are forwarding to Cortex Data Lake
+    # if this test passes that means there is nothing in profiles_not_sending_panorama
+    # meaning that every profile is currently sending to panorama
+    # the complex output uses a captured dict object and iterates across profiles and rules
+    # looking for specific entries not sending to panorama aka cortex data lake
     test: profiles_not_sending_panorama | length == 0
     severity: high
     fail_message: |
-      profiles not sending to panorama are: {{ profiles_not_sending_panorama }}
+      profiles and associated rules not sending to Cortex Data Lake are:
+
+      (profile name, rule name, log type)
+      {#- loop across the log forwarding profile object to find non CDL forwarding rules #}
+      {%- for profile_entry in log_settings_object %}
+        {%- for key, profile in profile_entry.items() %}
+          {%- set profile_name = profile['@name'] %}
+          {%- for key2, matchList in profile['match-list'].items() %}
+            {#- check if a single rule entry without a list for iteraction #}
+            {%- if matchList[1] | length == 0 %}
+              {%- if matchList['send-to-panorama'] == 'no' %}
+                {{ profile_name }}, {{ matchList['@name'] }}, {{ matchList['log-type'] }}
+              {%- endif %}
+            {%- else %}
+              {#- for multiple rules iterate across each list item to find bad rules #}
+              {%- for logRule in matchList %}
+                {%- if logRule['send-to-panorama'] == 'no' %}
+                {{ profile_name }}, {{ logRule['@name'] }}, {{ logRule['log-type'] }}
+                {%- endif %}
+              {%- endfor %}
+            {%- endif -%}
+          {%- endfor %}
+        {%- endfor %}
+      {%- endfor %}
+
     pass_message: |
       all profiles are sending to panorama
     documentation_link: https://docs.paloaltonetworks.com/pan-os/9-0/pan-os-admin/monitoring/configure-log-forwarding.html
@@ -238,20 +271,21 @@ snippets:
     # eal_not_enabled list, if it's not present it filters it out.
       - name: eal_not_enabled
         capture_list: |-
-          /config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='vsys1']/log-settings/profiles/entry/enhanced-application-logging/../@name
+          /config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='vsys1']/log-settings/profiles/entry/@name
         filter_items: item not in eal_enabled
 
 
   - name: check_eal_enabled
-    label: check that all profiles have eal enabled
+    label: Enhanced Application Logging is enabled for all log forwarding profiles
   #if this test passes that means there is nothing in eal_not_enabled
   #meaning that every profile currently has eal enabled
     test: eal_not_enabled | length == 0
     severity: high
     fail_message: |
-      profiles that don't have eal enabled are: {{ eal_not_enabled }}
+      profiles that don't have EAL enabled are:
+      {{ eal_not_enabled }}
     pass_message: |
-      all profiles have eal enabled
+      all profiles have EAL enabled
     documentation_link: https://docs.paloaltonetworks.com/pan-os/8-1/pan-os-admin/monitoring/enhanced-application-logs
 
 # ---------------------------------------------------------------------
