@@ -212,7 +212,7 @@ snippets:
       # get the complete object to parse for output message values
       - name: log_settings_object
         capture_object: |-
-          /config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='vsys1']/log-settings/profiles
+          /config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='vsys1']/log-settings/profiles/entry
 
 
   - name: check_sending_to_panorama_enabled
