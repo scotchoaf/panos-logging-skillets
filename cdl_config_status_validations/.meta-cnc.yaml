@@ -262,7 +262,7 @@ snippets:
     # get list of the profiles that have EAL enabled via xpath below
       - name: eal_enabled
         capture_list: |-
-          /config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='vsys1']/log-settings/profiles/entry
+          /config//log-settings/profiles/entry
           /enhanced-application-logging[text()='yes']/../@name
 
     # Xpath gets list of all possible profiles then filter to profiles that
@@ -271,7 +271,7 @@ snippets:
     # eal_not_enabled list, if it's not present it filters it out.
       - name: eal_not_enabled
         capture_list: |-
-          /config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='vsys1']/log-settings/profiles/entry/@name
+          /config//log-settings/profiles/entry/@name
         filter_items: item not in eal_enabled
 
 
