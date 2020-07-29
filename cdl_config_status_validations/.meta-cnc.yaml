@@ -219,7 +219,7 @@ snippets:
           /config/shared/log-settings/profiles/entry
 
   - name: check_sending_to_panorama_enabled
-    label: All profiles are forwarding to Cortex Data Lake
+    label: All profiles and rules are configured to forward to Cortex Data Lake
     # if this test passes that means there is nothing in profiles_not_sending_panorama
     # meaning that every profile is currently sending to panorama
     # the complex output uses a captured dict object and iterates across profiles and rules
