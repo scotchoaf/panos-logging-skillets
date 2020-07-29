@@ -180,7 +180,10 @@ snippets:
     element: |-
       {{ dhcp_server_config }}
 
-
+  # delete original dhcp server
+  - name: delete_original_dhcp_server
+    cmd: delete
+    xpath: /config/devices/entry[@name='localhost.localdomain']/network/dhcp/interface/entry[@name='ethernet1/2']
 
   # config dhcp relay from original interface to new vlan interface
   - name: dhcp_relay_to_new_server
