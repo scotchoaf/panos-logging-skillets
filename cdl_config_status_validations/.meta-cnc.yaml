@@ -197,7 +197,7 @@ snippets:
     #that are sending to panorama via xpath
       - name: sending_to_panorama_enabled
         capture_list: |-
-          /config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='vsys1']/log-settings/profiles/entry
+          /config//log-settings/profiles/entry
           /match-list/entry/send-to-panorama[text()='yes']/../../../@name
 
     # Xpath gets list of all possible profiles then filter to profiles that
@@ -206,15 +206,17 @@ snippets:
     # profiles_not_sending_panorama list, if it's not present it filters it out.
       - name: profiles_not_sending_panorama
         capture_list: |-
-          /config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='vsys1']/log-settings/profiles/entry/
+          /config//log-settings/profiles/entry/
           match-list/entry/send-to-panorama/../../../@name
         filter_items: item not in sending_to_panorama_enabled
 
       # get the complete object to parse for output message values
-      - name: log_settings_object
+      - name: log_settings_object_vsys
         capture_object: |-
           /config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='vsys1']/log-settings/profiles/entry
-
+      - name: log_settings_object_shared
+        capture_object: |-
+          /config/shared/log-settings/profiles/entry
 
   - name: check_sending_to_panorama_enabled
     label: All profiles are forwarding to Cortex Data Lake
@@ -228,26 +230,45 @@ snippets:
       profiles and associated rules not sending to Cortex Data Lake are:
 
       (profile name, rule name, log type)
-      {#- loop across the log forwarding profile object to find non CDL forwarding rules #}
-      {%- for profile_entry in log_settings_object %}
+      {%- for capture_obj in [ log_settings_object_shared, log_settings_object_vsys] %}
+      {%- if capture_obj is defined and capture_obj %}
+      {#- loop across the log forwarding profile objects to find non CDL forwarding rules #}
+      {%- if not capture_obj[1] %}
+        {%- if not capture_obj['entry']['match-list']['entry'][1] %}
+          {%- if capture_obj['entry']['match-list']['entry']['send-to-panorama'] != 'yes' %}
+          {{ capture_obj['entry']['@name'] }}, {{ capture_obj['entry']['match-list']['entry']['@name'] }}, {{ capture_obj['entry']['match-list']['entry']['log-type'] }}
+          {%- endif %}
+        {%- else %}
+          {#- for multiple rules iterate across each list item to find bad rules #}
+          {%- for logRule in capture_obj['entry']['match-list']['entry'] %}
+            {%- if logRule['send-to-panorama'] != 'yes' %}
+            {{ capture_obj['entry']['@name'] }}, {{ logRule['@name'] }}, {{ logRule['log-type'] }}
+            {%- endif %}
+          {%- endfor %}
+        {% endif %}
+      {%- else %}
+      {%- for profile_entry in capture_obj %}
         {%- for key, profile in profile_entry.items() %}
           {%- set profile_name = profile['@name'] %}
           {%- for key2, matchList in profile['match-list'].items() %}
             {#- check if a single rule entry without a list for iteraction #}
-            {%- if matchList[1] | length == 0 %}
-              {%- if matchList['send-to-panorama'] == 'no' %}
+            {%- if not matchList[1] %}
+              {%- if matchList['send-to-panorama'] != 'yes' %}
                 {{ profile_name }}, {{ matchList['@name'] }}, {{ matchList['log-type'] }}
               {%- endif %}
             {%- else %}
               {#- for multiple rules iterate across each list item to find bad rules #}
               {%- for logRule in matchList %}
-                {%- if logRule['send-to-panorama'] == 'no' %}
+                {%- if logRule['send-to-panorama'] != 'yes' %}
                 {{ profile_name }}, {{ logRule['@name'] }}, {{ logRule['log-type'] }}
                 {%- endif %}
               {%- endfor %}
             {%- endif -%}
           {%- endfor %}
         {%- endfor %}
+      {%- endfor %}
+      {%- endif %}
+      {%- endif %}
       {%- endfor %}
 
     pass_message: |
