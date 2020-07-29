@@ -227,7 +227,7 @@ snippets:
     test: profiles_not_sending_panorama | length == 0
     severity: high
     fail_message: |
-      profiles and associated rules not sending to Cortex Data Lake are:
+      profiles and associated rules not configured to forward to Cortex Data Lake are:
 
       (profile name, rule name, log type)
       {%- for capture_obj in [ log_settings_object_shared, log_settings_object_vsys] %}
@@ -272,7 +272,7 @@ snippets:
       {%- endfor %}
 
     pass_message: |
-      all profiles are sending to panorama
+      all profiles are configured to forward to Cortex Data Lake
     documentation_link: https://docs.paloaltonetworks.com/pan-os/9-0/pan-os-admin/monitoring/configure-log-forwarding.html
 
   - name: device_config_file
