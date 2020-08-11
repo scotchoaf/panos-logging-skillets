@@ -8,7 +8,7 @@ Skillet coverage includes:
     * capture the input name of the log forwarding profile
     * determine where the profile is configured (shared or vsys)
     * add CDL to existing log profile rules
-    * enable EAL and create associated log profile rules
+    * enable EAL and create log profile rules for missing log types
     
 > profile config file location is determined by how the profile is initially configured.
 > The Web UI uses a local vsys model while the CLI adds the profile to a shared location.
